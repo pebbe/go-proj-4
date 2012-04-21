@@ -1,3 +1,26 @@
+/*
+Package proj provides an interface to the Cartographic Projections Library PROJ.4.
+
+See: http://trac.osgeo.org/proj/
+
+Example usage:
+
+    merc, err := NewProj("+proj=merc +ellps=clrk66 +lat_ts=33")
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    ll, err := NewProj("+proj=latlong +ellps=clrk66")
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    x, y, err := Transform2(ll, merc, 1, 1, DegToRad(-16), DegToRad(20.25))
+    if err != nil {
+        t.Fatal(err)
+    }
+    fmt.Printf("%.2f %.2f", x, y)  // should print: -1495284.21 1920596.79
+*/
 package proj
 
 /*
