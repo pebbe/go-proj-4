@@ -5,19 +5,19 @@ See: http://trac.osgeo.org/proj/
 
 Example usage:
 
-    merc, err := NewProj("+proj=merc +ellps=clrk66 +lat_ts=33")
+    merc, err := proj.NewProj("+proj=merc +ellps=clrk66 +lat_ts=33")
     defer merc.Close()
     if err != nil {
         log.Fatal(err)
     }
 
-    ll, err := NewProj("+proj=latlong +ellps=clrk66")
+    ll, err := proj.NewProj("+proj=latlong +ellps=clrk66")
     defer ll.Close()
     if err != nil {
         log.Fatal(err)
     }
 
-    x, y, err := Transform2(ll, merc, 1, 1, DegToRad(-16), DegToRad(20.25))
+    x, y, err := proj.Transform2(ll, merc, 1, 1, proj.DegToRad(-16), proj.DegToRad(20.25))
     if err != nil {
         log.Fatal(err)
     }
