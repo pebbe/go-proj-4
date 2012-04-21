@@ -1,4 +1,4 @@
-The [Go](http://golang.org/) package _proj_ provides an interface to the [PROJ.4](http://trac.osgeo.org/proj/) library.
+The [Go](http://golang.org/) package _proj_ provides an interface to the Cartographic Projections Library [PROJ.4](http://trac.osgeo.org/proj/).
 
 ## Install
 
@@ -6,5 +6,5 @@ The [Go](http://golang.org/) package _proj_ provides an interface to the [PROJ.4
 
 ## Docs
 
- * [package help](http://gopkgdoc.appspot.com/pkg/github.com/pebbe/go-proj-4/proj)
+ * [package help](http://gopkgdoc.appspot.com/pkg/github.com/pebbe/go-proj-4/proj )
 
