@@ -8,11 +8,13 @@ import (
 func TestMercToLat(t *testing.T) {
 
 	merc, err := NewProj("+proj=merc +ellps=clrk66 +lat_ts=33")
+	defer merc.Close()
 	if err != nil {
 		t.Error(err)
 	}
 
 	ll, err := NewProj("+proj=latlong +ellps=clrk66")
+	defer ll.Close()
 	if err != nil {
 		t.Error(err)
 	}

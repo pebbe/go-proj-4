@@ -6,11 +6,13 @@ See: http://trac.osgeo.org/proj/
 Example usage:
 
     merc, err := NewProj("+proj=merc +ellps=clrk66 +lat_ts=33")
+    defer merc.Close()
     if err != nil {
         log.Fatal(err)
     }
 
     ll, err := NewProj("+proj=latlong +ellps=clrk66")
+    defer ll.Close()
     if err != nil {
         log.Fatal(err)
     }
