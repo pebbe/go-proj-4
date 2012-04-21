@@ -66,26 +66,32 @@ func (p *Proj) Close() {
 	}
 }
 
-func Transform2(srcpj, dstpj *Proj, point_count int64, point_offset int, x, y float64) (float64, float64, error) {
-	if !(srcpj.opened && dstpj.opened) {
-		return 0.0, 0.0, errors.New("projection is closed")
-	}
-	triple := C.transform2(srcpj.pj, dstpj.pj, C.long(point_count), C.int(point_offset), C.double(x), C.double(y))
-	if e := C.GoString(C.triple_err(triple)); e != "" {
-		return 0.0, 0.0, errors.New(e)
-	}
-	return float64(C.triple_x(triple)), float64(C.triple_y(triple)), nil
-}
-
-func Transform3(srcpj, dstpj *Proj, point_count int64, point_offset int, x, y, z float64) (float64, float64, float64, error) {
+func transform(srcpj, dstpj *Proj, point_count int64, point_offset int, x, y, z float64, hasz bool) (float64, float64, float64, error) {
 	if !(srcpj.opened && dstpj.opened) {
 		return 0.0, 0.0, 0.0, errors.New("projection is closed")
 	}
-	triple := C.transform3(srcpj.pj, dstpj.pj, C.long(point_count), C.int(point_offset), C.double(x), C.double(y), C.double(z))
+
+	var triple *C.triple
+	if hasz {
+		triple = C.transform3(srcpj.pj, dstpj.pj, C.long(point_count), C.int(point_offset), C.double(x), C.double(y), C.double(z))
+	} else {
+		triple = C.transform2(srcpj.pj, dstpj.pj, C.long(point_count), C.int(point_offset), C.double(x), C.double(y))
+	}
+
 	if e := C.GoString(C.triple_err(triple)); e != "" {
 		return 0.0, 0.0, 0.0, errors.New(e)
 	}
+
 	return float64(C.triple_x(triple)), float64(C.triple_y(triple)), float64(C.triple_z(triple)), nil
+}
+
+func Transform2(srcpj, dstpj *Proj, point_count int64, point_offset int, x, y float64) (float64, float64, error) {
+	xx, yy, _, err := transform(srcpj, dstpj, point_count, point_offset, x, y, 0, false) 
+	return xx, yy, err
+}
+
+func Transform3(srcpj, dstpj *Proj, point_count int64, point_offset int, x, y, z float64) (float64, float64, float64, error) {
+	return transform(srcpj, dstpj, point_count, point_offset, x, y, z, true) 
 }
 
 func DegToRad(deg float64) float64 {
