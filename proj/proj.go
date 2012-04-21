@@ -19,7 +19,7 @@ Example usage:
 
     x, y, err := Transform2(ll, merc, 1, 1, DegToRad(-16), DegToRad(20.25))
     if err != nil {
-        t.Fatal(err)
+        log.Fatal(err)
     }
     fmt.Printf("%.2f %.2f", x, y)  // should print: -1495284.21 1920596.79
 */
