@@ -34,6 +34,7 @@ import "C"
 import (
 	"errors"
 	"math"
+	"runtime"
 	"unsafe"
 )
 
@@ -55,6 +56,8 @@ func NewProj(definition string) (*Proj, error) {
 	} else {
 		err = errors.New(s)
 	}
+
+	runtime.SetFinalizer(&proj, (*Proj).Close)
 
 	return &proj, err
 }
@@ -86,12 +89,12 @@ func transform(srcpj, dstpj *Proj, point_count int64, point_offset int, x, y, z 
 }
 
 func Transform2(srcpj, dstpj *Proj, point_count int64, point_offset int, x, y float64) (float64, float64, error) {
-	xx, yy, _, err := transform(srcpj, dstpj, point_count, point_offset, x, y, 0, false) 
+	xx, yy, _, err := transform(srcpj, dstpj, point_count, point_offset, x, y, 0, false)
 	return xx, yy, err
 }
 
 func Transform3(srcpj, dstpj *Proj, point_count int64, point_offset int, x, y, z float64) (float64, float64, float64, error) {
-	return transform(srcpj, dstpj, point_count, point_offset, x, y, z, true) 
+	return transform(srcpj, dstpj, point_count, point_offset, x, y, z, true)
 }
 
 func DegToRad(deg float64) float64 {
