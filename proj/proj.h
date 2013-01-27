@@ -1,14 +1,9 @@
 #include <proj_api.h>
 
 typedef struct {
-    int err;
+    char *err;
     double x, y, z;
 } triple;
 
-triple *transform2(projPJ srcdefn, projPJ dstdefn, long point_count, int point_offset, double x, double y);
-triple *transform3(projPJ srcdefn, projPJ dstdefn, long point_count, int point_offset, double x, double y, double z);
-double triple_x(triple *t);
-double triple_y(triple *t);
-double triple_z(triple *t);
-char *triple_err(triple *t);
+triple *transform(projPJ srcdefn, projPJ dstdefn, long point_count, int point_offset, double x, double y, double z, int has_z);
 char *get_err();

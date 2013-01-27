@@ -69,23 +69,28 @@ func (p *Proj) Close() {
 	}
 }
 
-func transform(srcpj, dstpj *Proj, point_count int64, point_offset int, x, y, z float64, hasz bool) (float64, float64, float64, error) {
+func transform(srcpj, dstpj *Proj, point_count int64, point_offset int, x, y, z float64, has_z bool) (float64, float64, float64, error) {
 	if !(srcpj.opened && dstpj.opened) {
 		return 0.0, 0.0, 0.0, errors.New("projection is closed")
 	}
 
 	var triple *C.triple
-	if hasz {
-		triple = C.transform3(srcpj.pj, dstpj.pj, C.long(point_count), C.int(point_offset), C.double(x), C.double(y), C.double(z))
+	if has_z {
+		triple = C.transform(srcpj.pj, dstpj.pj, C.long(point_count), C.int(point_offset), C.double(x), C.double(y), C.double(z), C.int(0))
 	} else {
-		triple = C.transform2(srcpj.pj, dstpj.pj, C.long(point_count), C.int(point_offset), C.double(x), C.double(y))
+		triple = C.transform(srcpj.pj, dstpj.pj, C.long(point_count), C.int(point_offset), C.double(x), C.double(y), C.double(0), C.int(0))
 	}
 
-	if e := C.GoString(C.triple_err(triple)); e != "" {
+	if triple == nil {
+		return 0.0, 0.0, 0.0, errors.New("transform malloc failed")
+	}
+	defer C.free(unsafe.Pointer(triple))
+
+	if e := C.GoString(triple.err); e != "" {
 		return 0.0, 0.0, 0.0, errors.New(e)
 	}
 
-	return float64(C.triple_x(triple)), float64(C.triple_y(triple)), float64(C.triple_z(triple)), nil
+	return float64(triple.x), float64(triple.y), float64(triple.z), nil
 }
 
 func Transform2(srcpj, dstpj *Proj, point_count int64, point_offset int, x, y float64) (float64, float64, error) {
