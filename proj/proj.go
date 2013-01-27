@@ -6,7 +6,7 @@ See: http://trac.osgeo.org/proj/
 Example usage:
 
     merc, err := proj.NewProj("+proj=merc +ellps=clrk66 +lat_ts=33")
-    defer merc.Close()
+    defer merc.Close() // if omitted, this will be called on garbage collection
     if err != nil {
         log.Fatal(err)
     }
