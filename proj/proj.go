@@ -44,22 +44,21 @@ type Proj struct {
 }
 
 func NewProj(definition string) (*Proj, error) {
-	runtime.LockOSThread()
-
 	cs := C.CString(definition)
 	defer C.free(unsafe.Pointer(cs))
 	proj := Proj{opened: false}
+
+	runtime.LockOSThread()
 	proj.pj = C.pj_init_plus(cs)
+	errstring := C.GoString(C.get_err())
+	runtime.UnlockOSThread()
 
 	var err error = nil
-	s := C.GoString(C.get_err())
-	if s == "" {
+	if errstring == "" {
 		proj.opened = true
 	} else {
-		err = errors.New(s)
+		err = errors.New(errstring)
 	}
-
-	runtime.UnlockOSThread()
 
 	runtime.SetFinalizer(&proj, (*Proj).Close)
 
