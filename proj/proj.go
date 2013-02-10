@@ -44,6 +44,8 @@ type Proj struct {
 }
 
 func NewProj(definition string) (*Proj, error) {
+	runtime.LockOSThread()
+
 	cs := C.CString(definition)
 	defer C.free(unsafe.Pointer(cs))
 	proj := Proj{opened: false}
@@ -56,6 +58,8 @@ func NewProj(definition string) (*Proj, error) {
 	} else {
 		err = errors.New(s)
 	}
+
+	runtime.UnlockOSThread()
 
 	runtime.SetFinalizer(&proj, (*Proj).Close)
 
