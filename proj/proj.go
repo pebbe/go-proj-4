@@ -35,7 +35,12 @@ import (
 	"errors"
 	"math"
 	"runtime"
+	"sync"
 	"unsafe"
+)
+
+var (
+	mu sync.Mutex
 )
 
 type Proj struct {
@@ -48,10 +53,10 @@ func NewProj(definition string) (*Proj, error) {
 	defer C.free(unsafe.Pointer(cs))
 	proj := Proj{opened: false}
 
-	runtime.LockOSThread()
+	mu.Lock()
 	proj.pj = C.pj_init_plus(cs)
 	errstring := C.GoString(C.get_err())
-	runtime.UnlockOSThread()
+	mu.Unlock()
 
 	var err error = nil
 	if errstring == "" {
