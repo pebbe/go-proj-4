@@ -21,6 +21,30 @@ triple *transform(projPJ srcdefn, projPJ dstdefn, long point_count, int point_of
     return trip;
 }
 
+void fwd(projPJ pj, double *x, double *y) {
+    projUV
+	p;
+
+    p.u = *x * DEG_TO_RAD;
+    p.v = *y * DEG_TO_RAD;
+    p = pj_fwd(p, pj);
+
+    *x = p.u;
+    *y = p.v;
+}
+
+void inv(projPJ pj, double *x, double *y) {
+    projUV
+	p;
+
+    p.u = *x;
+    p.v = *y;
+    p = pj_inv(p, pj);
+
+    *x = p.u / DEG_TO_RAD;
+    *y = p.v / DEG_TO_RAD;
+}
+
 char *get_err()
 {
     int

@@ -84,7 +84,7 @@ func transform(srcpj, dstpj *Proj, point_count int64, point_offset int, x, y, z 
 
 	var triple *C.triple
 	if has_z {
-		triple = C.transform(srcpj.pj, dstpj.pj, C.long(point_count), C.int(point_offset), C.double(x), C.double(y), C.double(z), C.int(0))
+		triple = C.transform(srcpj.pj, dstpj.pj, C.long(point_count), C.int(point_offset), C.double(x), C.double(y), C.double(z), C.int(1))
 	} else {
 		triple = C.transform(srcpj.pj, dstpj.pj, C.long(point_count), C.int(point_offset), C.double(x), C.double(y), C.double(0), C.int(0))
 	}
@@ -108,6 +108,20 @@ func Transform2(srcpj, dstpj *Proj, point_count int64, point_offset int, x, y fl
 
 func Transform3(srcpj, dstpj *Proj, point_count int64, point_offset int, x, y, z float64) (float64, float64, float64, error) {
 	return transform(srcpj, dstpj, point_count, point_offset, x, y, z, true)
+}
+
+func Fwd(proj *Proj, long, lat float64) (float64, float64) {
+	x := C.double(long)
+	y := C.double(lat)
+	C.fwd(proj.pj, &x, &y)
+	return float64(x), float64(y)
+}
+
+func Inv(proj *Proj, x1, y1 float64) (float64, float64) {
+	x := C.double(x1)
+	y := C.double(y1)
+	C.inv(proj.pj, &x, &y)
+	return float64(x), float64(y)
 }
 
 func DegToRad(deg float64) float64 {
