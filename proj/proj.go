@@ -17,7 +17,7 @@ Example usage:
         log.Fatal(err)
     }
 
-    x, y, err := proj.Transform2(ll, merc, 1, 1, proj.DegToRad(-16), proj.DegToRad(20.25))
+    x, y, err := proj.Transform2(ll, merc, proj.DegToRad(-16), proj.DegToRad(20.25))
     if err != nil {
         log.Fatal(err)
     }
@@ -77,36 +77,82 @@ func (p *Proj) Close() {
 	}
 }
 
-func transform(srcpj, dstpj *Proj, point_count int64, point_offset int, x, y, z float64, has_z bool) (float64, float64, float64, error) {
+func transform(srcpj, dstpj *Proj, x, y, z []float64) ([]float64, []float64, []float64, error) {
 	if !(srcpj.opened && dstpj.opened) {
-		return math.NaN(), math.NaN(), math.NaN(), errors.New("projection is closed")
+		return []float64{}, []float64{}, []float64{}, errors.New("projection is closed")
 	}
 
-	x1 := C.double(x)
-	y1 := C.double(y)
-	z1 := C.double(z)
+	var x1, y1, z1 []C.double
+
+	ln := len(x)
+	if len(y) < ln {
+		ln = len(y)
+	}
+	if z != nil && len(z) < ln {
+		ln = len(z)
+	}
+
+	if ln == 0 {
+		return []float64{}, []float64{}, []float64{}, nil
+	}
+
+	x1 = make([]C.double, ln)
+	y1 = make([]C.double, ln)
+	if z != nil {
+		z1 = make([]C.double, ln)
+	}
+	for i := 0; i < ln; i++ {
+		x1[i] = C.double(x[i])
+		y1[i] = C.double(y[i])
+		if z != nil {
+			z1[i] = C.double(z[i])
+		}
+	}
 
 	var e *C.char
-	if has_z {
-		e = C.transform(srcpj.pj, dstpj.pj, C.long(point_count), C.int(point_offset), &x1, &y1, &z1, C.int(1))
+	if z != nil {
+		e = C.transform(srcpj.pj, dstpj.pj, C.long(ln), &x1[0], &y1[0], &z1[0])
 	} else {
-		e = C.transform(srcpj.pj, dstpj.pj, C.long(point_count), C.int(point_offset), &x1, &y1, &z1, C.int(0))
+		e = C.transform(srcpj.pj, dstpj.pj, C.long(ln), &x1[0], &y1[0], nil)
 	}
 
 	if e != nil {
-		return math.NaN(), math.NaN(), math.NaN(), errors.New(C.GoString(e))
+		return  []float64{}, []float64{}, []float64{}, errors.New(C.GoString(e))
 	}
 
-	return float64(x1), float64(y1), float64(z1), nil
+	var x2, y2, z2 []float64
+	x2 = make([]float64, ln)
+	y2 = make([]float64, ln)
+	if z != nil {
+		z2 = make([]float64, ln)
+	}
+	for i := 0; i < ln; i++ {
+		x2[i] = float64(x1[i])
+		y2[i] = float64(y1[i])
+		if z != nil {
+			z2[i] = float64(z1[i])
+		}
+	}
+	return x2, y2, z2, nil
 }
 
-func Transform2(srcpj, dstpj *Proj, point_count int64, point_offset int, x, y float64) (float64, float64, error) {
-	xx, yy, _, err := transform(srcpj, dstpj, point_count, point_offset, x, y, 0, false)
+func Transform2(srcpj, dstpj *Proj, x, y float64) (float64, float64, error) {
+	xx, yy, _, err := transform(srcpj, dstpj, []float64{x}, []float64{y}, nil)
+	return xx[0], yy[0], err
+}
+
+func Transform3(srcpj, dstpj *Proj, x, y, z float64) (float64, float64, float64, error) {
+	xx, yy, zz, err := transform(srcpj, dstpj, []float64{x}, []float64{y}, []float64{z})
+	return xx[0], yy[0], zz[0], err
+}
+
+func Transform2lst(srcpj, dstpj *Proj, x, y []float64) ([]float64, []float64, error) {
+	xx, yy, _, err := transform(srcpj, dstpj, x, y, nil)
 	return xx, yy, err
 }
 
-func Transform3(srcpj, dstpj *Proj, point_count int64, point_offset int, x, y, z float64) (float64, float64, float64, error) {
-	return transform(srcpj, dstpj, point_count, point_offset, x, y, z, true)
+func Transform3lst(srcpj, dstpj *Proj, x, y, z []float64) ([]float64, []float64, []float64, error) {
+	return transform(srcpj, dstpj, x, y, z)
 }
 
 // Longitude and latitude in degrees

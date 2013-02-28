@@ -39,13 +39,10 @@ char *inv(projPJ pj, double *x, double *y) {
     return get_err();
 }
 
-char *transform(projPJ srcdefn, projPJ dstdefn, long point_count, int point_offset, double *x, double *y, double *z, int has_z) {
+char *transform(projPJ srcdefn, projPJ dstdefn, long point_count, double *x, double *y, double *z) {
     int
 	err;
-    if (has_z)
-	err = pj_transform(srcdefn, dstdefn, point_count, point_offset, x, y, z);
-    else
-	err = pj_transform(srcdefn, dstdefn, point_count, point_offset, x, y, NULL);
+    err = pj_transform(srcdefn, dstdefn, point_count, 1, x, y, z);
     return err ? pj_strerrno(err) : NULL;
 }
 

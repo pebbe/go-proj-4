@@ -19,7 +19,7 @@ func TestMercToLatlong(t *testing.T) {
 		t.Error(err)
 	}
 
-	x, y, err := Transform2(ll, merc, 1, 1, DegToRad(-16), DegToRad(20.25))
+	x, y, err := Transform2(ll, merc, DegToRad(-16), DegToRad(20.25))
 	if err != nil {
 		t.Error(err)
 	} else {
