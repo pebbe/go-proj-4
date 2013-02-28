@@ -13,7 +13,7 @@ func TestMercToLatlong(t *testing.T) {
 		t.Error(err)
 	}
 
-	ll, err := NewProj("+proj=latlong +ellps=clrk66")
+	ll, err := NewProj("+proj=latlong")
 	defer ll.Close()
 	if err != nil {
 		t.Error(err)

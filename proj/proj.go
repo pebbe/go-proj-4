@@ -11,7 +11,7 @@ Example usage:
         log.Fatal(err)
     }
 
-    ll, err := proj.NewProj("+proj=latlong +ellps=clrk66")
+    ll, err := proj.NewProj("+proj=latlong")
     defer ll.Close()
     if err != nil {
         log.Fatal(err)
@@ -79,26 +79,25 @@ func (p *Proj) Close() {
 
 func transform(srcpj, dstpj *Proj, point_count int64, point_offset int, x, y, z float64, has_z bool) (float64, float64, float64, error) {
 	if !(srcpj.opened && dstpj.opened) {
-		return 0.0, 0.0, 0.0, errors.New("projection is closed")
+		return math.NaN(), math.NaN(), math.NaN(), errors.New("projection is closed")
 	}
 
-	var triple *C.triple
+	x1 := C.double(x)
+	y1 := C.double(y)
+	z1 := C.double(z)
+
+	var e *C.char
 	if has_z {
-		triple = C.transform(srcpj.pj, dstpj.pj, C.long(point_count), C.int(point_offset), C.double(x), C.double(y), C.double(z), C.int(1))
+		e = C.transform(srcpj.pj, dstpj.pj, C.long(point_count), C.int(point_offset), &x1, &y1, &z1, C.int(1))
 	} else {
-		triple = C.transform(srcpj.pj, dstpj.pj, C.long(point_count), C.int(point_offset), C.double(x), C.double(y), C.double(0), C.int(0))
+		e = C.transform(srcpj.pj, dstpj.pj, C.long(point_count), C.int(point_offset), &x1, &y1, &z1, C.int(0))
 	}
 
-	if triple == nil {
-		return 0.0, 0.0, 0.0, errors.New("transform malloc failed")
-	}
-	defer C.free(unsafe.Pointer(triple))
-
-	if e := C.GoString(triple.err); e != "" {
-		return 0.0, 0.0, 0.0, errors.New(e)
+	if e != nil {
+		return math.NaN(), math.NaN(), math.NaN(), errors.New(C.GoString(e))
 	}
 
-	return float64(triple.x), float64(triple.y), float64(triple.z), nil
+	return float64(x1), float64(y1), float64(z1), nil
 }
 
 func Transform2(srcpj, dstpj *Proj, point_count int64, point_offset int, x, y float64) (float64, float64, error) {
@@ -110,18 +109,32 @@ func Transform3(srcpj, dstpj *Proj, point_count int64, point_offset int, x, y, z
 	return transform(srcpj, dstpj, point_count, point_offset, x, y, z, true)
 }
 
-func Fwd(proj *Proj, long, lat float64) (float64, float64) {
-	x := C.double(long)
-	y := C.double(lat)
-	C.fwd(proj.pj, &x, &y)
-	return float64(x), float64(y)
+// Longitude and latitude in degrees
+func Fwd(proj *Proj, long, lat float64) (x float64, y float64, err error) {
+	if !proj.opened {
+		return math.NaN(), math.NaN(), errors.New("projection is closed")
+	}
+	x1 := C.double(long)
+	y1 := C.double(lat)
+	e := C.fwd(proj.pj, &x1, &y1)
+	if e != nil {
+		return math.NaN(), math.NaN(), errors.New(C.GoString(e))
+	}
+	return float64(x1), float64(y1), nil
 }
 
-func Inv(proj *Proj, x1, y1 float64) (float64, float64) {
-	x := C.double(x1)
-	y := C.double(y1)
-	C.inv(proj.pj, &x, &y)
-	return float64(x), float64(y)
+// Longitude and latitude in degrees
+func Inv(proj *Proj, x, y float64) (lat float64, long float64, err error) {
+	if !proj.opened {
+		return math.NaN(), math.NaN(), errors.New("projection is closed")
+	}
+	x2 := C.double(x)
+	y2 := C.double(y)
+	e := C.inv(proj.pj, &x2, &y2)
+	if e != nil {
+		return math.NaN(), math.NaN(), errors.New(C.GoString(e))
+	}
+	return float64(x2), float64(y2), nil
 }
 
 func DegToRad(deg float64) float64 {

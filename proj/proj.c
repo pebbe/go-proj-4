@@ -1,27 +1,17 @@
 #include "proj.h"
 
-triple *transform(projPJ srcdefn, projPJ dstdefn, long point_count, int point_offset, double x, double y, double z, int has_z) {
-    triple
-      *trip;
+char *get_err()
+{
     int
-	err;
-
-    trip = (triple *) malloc (sizeof (triple));
-    if (! trip)
-	return NULL;
-
-    trip->x = x;
-    trip->y = y;
-    trip->z = z;
-    if (has_z)
-	err = pj_transform(srcdefn, dstdefn, point_count, point_offset, &(trip->x), &(trip->y), &(trip->z));
+        *i;
+    i = pj_get_errno_ref();
+    if (*i)
+        return pj_strerrno(*i);
     else
-	err = pj_transform(srcdefn, dstdefn, point_count, point_offset, &(trip->x), &(trip->y), NULL);
-    trip->err = err ? pj_strerrno(err) : "";
-    return trip;
+        return NULL;
 }
 
-void fwd(projPJ pj, double *x, double *y) {
+char *fwd(projPJ pj, double *x, double *y) {
     projUV
 	p;
 
@@ -31,9 +21,11 @@ void fwd(projPJ pj, double *x, double *y) {
 
     *x = p.u;
     *y = p.v;
+
+    return get_err();
 }
 
-void inv(projPJ pj, double *x, double *y) {
+char *inv(projPJ pj, double *x, double *y) {
     projUV
 	p;
 
@@ -43,15 +35,17 @@ void inv(projPJ pj, double *x, double *y) {
 
     *x = p.u / DEG_TO_RAD;
     *y = p.v / DEG_TO_RAD;
+
+    return get_err();
 }
 
-char *get_err()
-{
+char *transform(projPJ srcdefn, projPJ dstdefn, long point_count, int point_offset, double *x, double *y, double *z, int has_z) {
     int
-        *i;
-    i = pj_get_errno_ref();
-    if (*i)
-        return pj_strerrno(*i);
+	err;
+    if (has_z)
+	err = pj_transform(srcdefn, dstdefn, point_count, point_offset, x, y, z);
     else
-        return "";
+	err = pj_transform(srcdefn, dstdefn, point_count, point_offset, x, y, NULL);
+    return err ? pj_strerrno(err) : NULL;
 }
+
