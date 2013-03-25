@@ -7,5 +7,3 @@ The [Go](http://golang.org/) package _proj_ provides an interface to the Cartogr
 ## Docs
 
  * [package help](http://godoc.org/github.com/pebbe/go-proj-4/proj)
-
-[![CCby](http://i.creativecommons.org/l/by/3.0/88x31.png "Creative Commons Attribution 3.0 License")](http://creativecommons.org/licenses/by/3.0/)
