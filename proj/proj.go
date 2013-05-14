@@ -51,7 +51,7 @@ type Proj struct {
 func NewProj(definition string) (*Proj, error) {
 	cs := C.CString(definition)
 	defer C.free(unsafe.Pointer(cs))
-	proj := Proj{opened: false}
+	proj := &Proj{opened: false}
 
 	mu.Lock()
 	proj.pj = C.pj_init_plus(cs)
@@ -65,9 +65,9 @@ func NewProj(definition string) (*Proj, error) {
 		err = errors.New(errstring)
 	}
 
-	runtime.SetFinalizer(&proj, (*Proj).Close)
+	runtime.SetFinalizer(proj, (*Proj).Close)
 
-	return &proj, err
+	return proj, err
 }
 
 func (p *Proj) Close() {
