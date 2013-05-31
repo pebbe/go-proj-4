@@ -156,7 +156,7 @@ func Transform3lst(srcpj, dstpj *Proj, x, y, z []float64) ([]float64, []float64,
 }
 
 // Longitude and latitude in degrees
-func Fwd(proj *Proj, long, lat float64) (x float64, y float64, err error) {
+func Fwd(proj *Proj, long, lat float64) (x, y float64, err error) {
 	if !proj.opened {
 		return math.NaN(), math.NaN(), errors.New("projection is closed")
 	}
@@ -170,7 +170,7 @@ func Fwd(proj *Proj, long, lat float64) (x float64, y float64, err error) {
 }
 
 // Longitude and latitude in degrees
-func Inv(proj *Proj, x, y float64) (lat float64, long float64, err error) {
+func Inv(proj *Proj, x, y float64) (long, lat float64, err error) {
 	if !proj.opened {
 		return math.NaN(), math.NaN(), errors.New("projection is closed")
 	}
