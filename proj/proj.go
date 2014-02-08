@@ -1,5 +1,5 @@
 /*
-Package proj provides an interface to the Cartographic Projections Library PROJ.4.
+Package proj provides an interface to the Cartographic Projections Library PROJ.4 [cartography].
 
 See: http://trac.osgeo.org/proj/
 
