@@ -117,7 +117,7 @@ func transform(srcpj, dstpj *Proj, x, y, z []float64) ([]float64, []float64, []f
 	}
 
 	if e != nil {
-		return  []float64{}, []float64{}, []float64{}, errors.New(C.GoString(e))
+		return []float64{}, []float64{}, []float64{}, errors.New(C.GoString(e))
 	}
 
 	var x2, y2, z2 []float64
@@ -138,11 +138,17 @@ func transform(srcpj, dstpj *Proj, x, y, z []float64) ([]float64, []float64, []f
 
 func Transform2(srcpj, dstpj *Proj, x, y float64) (float64, float64, error) {
 	xx, yy, _, err := transform(srcpj, dstpj, []float64{x}, []float64{y}, nil)
+	if err != nil {
+		return math.NaN(), math.NaN(), err
+	}
 	return xx[0], yy[0], err
 }
 
 func Transform3(srcpj, dstpj *Proj, x, y, z float64) (float64, float64, float64, error) {
 	xx, yy, zz, err := transform(srcpj, dstpj, []float64{x}, []float64{y}, []float64{z})
+	if err != nil {
+		return math.NaN(), math.NaN(), math.NaN(), err
+	}
 	return xx[0], yy[0], zz[0], err
 }
 
