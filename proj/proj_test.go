@@ -6,7 +6,6 @@ import (
 )
 
 func TestMercToLatlong(t *testing.T) {
-
 	merc, err := NewProj("+proj=merc +ellps=clrk66 +lat_ts=33")
 	defer merc.Close()
 	if err != nil {
@@ -28,5 +27,31 @@ func TestMercToLatlong(t *testing.T) {
 		if s != s1 {
 			t.Errorf("MercToLatlong = %v, want %v", s, s1)
 		}
+	}
+}
+
+func TestInvalidErrorProblem(t *testing.T) {
+	merc, err := NewProj("+proj=merc +ellps=clrk66 +lat_ts=33")
+	defer merc.Close()
+	if err != nil {
+		t.Error(err)
+	}
+
+	ll, err := NewProj("+proj=latlong")
+	defer ll.Close()
+	if err != nil {
+		t.Error(err)
+	}
+
+	_, _, err = Transform2(ll, merc, DegToRad(3000), DegToRad(500))
+	if err == nil {
+		t.Error("err should not be nil")
+	}
+
+	// Try create a new projection after an error
+	merc2, err := NewProj("+proj=merc +ellps=clrk66 +lat_ts=33")
+	defer merc2.Close()
+	if err != nil {
+		t.Error(err)
 	}
 }

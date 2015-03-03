@@ -59,7 +59,7 @@ func NewProj(definition string) (*Proj, error) {
 	mu.Unlock()
 
 	var err error = nil
-	if errstring == "" {
+	if proj.pj != nil {
 		proj.opened = true
 	} else {
 		err = errors.New(errstring)
