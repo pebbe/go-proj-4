@@ -54,20 +54,18 @@ func NewProj(definition string) (*Proj, error) {
 	proj := &Proj{opened: false}
 
 	mu.Lock()
-	proj.pj = C.pj_init_plus(cs)
-	errstring := C.GoString(C.get_err())
-	mu.Unlock()
+	defer mu.Unlock()
 
-	var err error = nil
-	if proj.pj != nil {
-		proj.opened = true
-	} else {
-		err = errors.New(errstring)
+	proj.pj = C.pj_init_plus(cs)
+
+	if proj.pj == nil {
+		return proj, errors.New(C.GoString(C.get_err()))
 	}
 
+	proj.opened = true
 	runtime.SetFinalizer(proj, (*Proj).Close)
 
-	return proj, err
+	return proj, nil
 }
 
 func (p *Proj) Close() {
