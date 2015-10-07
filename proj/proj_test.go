@@ -12,7 +12,7 @@ func TestMercToLatlong(t *testing.T) {
 		t.Error(err)
 	}
 
-	ll, err := NewProj("+proj=latlong +datum=WGS84")
+	ll, err := NewProj("+proj=latlong")
 	defer ll.Close()
 	if err != nil {
 		t.Error(err)
@@ -37,7 +37,7 @@ func TestInvalidErrorProblem(t *testing.T) {
 		t.Error(err)
 	}
 
-	ll, err := NewProj("+proj=latlong +datum=WGS84")
+	ll, err := NewProj("+proj=latlong")
 	defer ll.Close()
 	if err != nil {
 		t.Error(err)
