@@ -26,7 +26,7 @@ Example usage:
 package proj
 
 /*
-#cgo LDFLAGS: -lproj
+#cgo pkg-config: proj
 #include "proj.h"
 */
 import "C"
