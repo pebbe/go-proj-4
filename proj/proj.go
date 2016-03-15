@@ -26,7 +26,8 @@ Example usage:
 package proj
 
 /*
-#cgo LDFLAGS: -lproj
+#cgo darwin pkg-config: proj
+#cgo !darwin LDFLAGS: -lproj
 #include "proj.h"
 */
 import "C"
