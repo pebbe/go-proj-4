@@ -45,7 +45,7 @@ var (
 )
 
 type Proj struct {
-	pj     _Ctype_projPJ
+	pj     C.projPJ
 	opened bool
 }
 
