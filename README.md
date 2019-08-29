@@ -8,7 +8,7 @@ For PROJ.4 and PROJ versions 5 and 6:
 
     go get github.com/pebbe/go-proj-4/proj
 
-For PROJ 5 and beyond:
+For PROJ version 5 and beyond:
 
     go get github.com/pebbe/go-proj-4/proj/v5
 
