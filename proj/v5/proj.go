@@ -1,9 +1,9 @@
 /*
-Package proj provides an interface to the Cartographic Projections Library PROJ.4 [cartography].
+Package proj provides an interface to what once was the Cartographic Projections Library PROJ.4 [cartography].
 
 See: https://proj.org
 
-This version works with the old PROJ.4 library as well as the newer PROJ library up to and including version 6.
+This version works with the newer PROJ library, starting with version 5.
 
 Example usage:
 
@@ -30,7 +30,7 @@ package proj
 /*
 #cgo darwin pkg-config: proj
 #cgo !darwin LDFLAGS: -lproj
-#include "proj.h"
+#include "proj_go.h"
 */
 import "C"
 
@@ -47,7 +47,7 @@ var (
 )
 
 type Proj struct {
-	pj     C.projPJ
+	pj     *C.PJ
 	opened bool
 }
 
@@ -59,7 +59,7 @@ func NewProj(definition string) (*Proj, error) {
 	mu.Lock()
 	defer mu.Unlock()
 
-	proj.pj = C.pj_init_plus(cs)
+	proj.pj = C.create(cs)
 
 	if proj.pj == nil {
 		return proj, errors.New(C.GoString(C.get_err()))
@@ -73,7 +73,7 @@ func NewProj(definition string) (*Proj, error) {
 
 func (p *Proj) Close() {
 	if p.opened {
-		C.pj_free(p.pj)
+		C.proj_destroy(p.pj)
 		p.opened = false
 	}
 }

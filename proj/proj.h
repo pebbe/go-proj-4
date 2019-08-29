@@ -1,4 +1,4 @@
-#define ACCEPT_USE_OF_DEPRECATED_PROJ_API_H yes
+#define ACCEPT_USE_OF_DEPRECATED_PROJ_API_H
 #include <proj_api.h>
 
 char *transform(projPJ srcdefn, projPJ dstdefn, long point_count, double *x, double *y, double *z);
