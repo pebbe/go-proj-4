@@ -1,4 +1,6 @@
-The [Go](http://golang.org/) package _proj_ provides an interface to the Cartographic Projections Library [PROJ](https://proj.org/).
+The [Go](http://golang.org/) package _proj_ provides a limited interface to the Cartographic Projections Library [PROJ](https://proj.org/).
+
+For PROJ version 5 and beyond, see also: https://github.com/pebbe/proj
 
 Keywords: cartography, cartographic projection
 
