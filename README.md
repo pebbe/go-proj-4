@@ -12,7 +12,7 @@ For PROJ.4 and PROJ versions 5 and 6:
 
 For PROJ version 5 and beyond:
 
-    go get github.com/pebbe/go-proj-4/proj/v5
+    go get github.com/pebbe/proj/v5
 
 
 ## Docs
